@@ -1,0 +1,14 @@
+[buildPlans.RyanTerm]
+family = "Ryan Term"
+spacing = "term"
+serifs = "sans"
+noCvSs = true
+exportGlyphNames = true
+
+[buildPlans.RyanTerm.variants]
+inherits = "ss05"
+
+[buildPlans.RyanTerm.widths.Normal]
+shape = 600
+menu = 5
+css = "normal"

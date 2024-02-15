@@ -1,0 +1,14 @@
+[buildPlans.RyanMono]
+family = "Ryan Mono"
+spacing = "normal"
+serifs = "sans"
+noCvSs = true
+exportGlyphNames = true
+
+[buildPlans.RyanMono.variants]
+inherits = "ss05"
+
+[buildPlans.RyanMono.widths.Normal]
+shape = 600
+menu = 5
+css = "normal"

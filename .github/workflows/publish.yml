@@ -1,0 +1,50 @@
+name: Publish
+
+on:
+  check_suite:
+    types: [completed]
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package:
+          - ryan-mono
+          - ryan-term
+          - ryan-mono-nerd
+          - ryan-term-nerd
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+
+      - name: Build flake
+        run: |
+          nix build --accept-flake-config -L .#${{ matrix.package }}
+
+      - name: Package fonts
+        run: |
+          zip -r ${{ github.workspace }}/${{ matrix.package }}.zip *
+        working-directory: result
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y.%m.%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: v${{ steps.date.outputs.date }}
+          tag_name: ${{ steps.date.outputs.date }}
+          files: ${{ matrix.package }}.zip
