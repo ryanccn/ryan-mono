@@ -54,11 +54,6 @@ echo -e "$(cyan "Iosevka")\t\t$iosevka_version"
 echo -e "$(cyan "Nerd Fonts")\t$nerd_fonts_version"
 echo -e "$(cyan "FontForge")\t$(fontforge -version 2> /dev/null | sed -n 's|fontforge ||p')"
 
-if command -v brotli &> /dev/null;
-then echo -e "$(cyan "Brotli")\t\tavailable $(dim "($(command -v brotli))")"
-else echo -e "$(cyan "Brotli")\t\tunavailable"
-fi
-
 cpus=1
 cpus_source="unknown"
 command -v nproc &> /dev/null && cpus="$(nproc)" && cpus_source="nproc"
@@ -72,49 +67,41 @@ rm -rf dist
 for font_family in "${font_families[@]}"; do
     echo "$(green "$(bold "Building $font_family")")"
 
-    rm -rf work
-    mkdir -p work
+    rm -rf work && mkdir -p work
     pushd work
 
-    git clone --depth 1 --branch "$iosevka_version" https://github.com/be5invis/Iosevka.git iosevka
-    cp "../$font_family.toml" iosevka/private-build-plans.toml
+    git clone --depth 1 --branch "$iosevka_version" https://github.com/be5invis/Iosevka.git _iosevka
+    cp "../$font_family.toml" _iosevka/private-build-plans.toml
 
-    pushd iosevka
+    pushd _iosevka
     npm ci
     npm run build -- "ttf::$font_family"
     popd
 
-    mkdir -p dist
-    cp iosevka/dist/"$font_family"/TTF/* dist
+    mkdir -p "$font_family"
+    cp _iosevka/dist/"$font_family"/TTF/* "$font_family"
 
     curl -fsSL -o FontPatcher.zip \
         "https://github.com/ryanoasis/nerd-fonts/releases/download/$nerd_fonts_version/FontPatcher.zip"
-    unzip FontPatcher.zip -d FontPatcher
+    unzip FontPatcher.zip -d _fontpatcher
+    rm FontPatcher.zip
 
-    mkdir -p dist-nerd
-    find dist -name '*.ttf' -print0 | xargs -0 --max-args=1 --max-procs="$cpus" \
-        fontforge -script FontPatcher/font-patcher --quiet --complete --outputdir dist-nerd
+    mkdir -p "${font_family}NerdFont"
+    find "$font_family" -name '*.ttf' -print0 | xargs -0 --max-args=1 --max-procs="$cpus" \
+        fontforge -script _fontpatcher/font-patcher --quiet --complete --outputdir "${font_family}NerdFont"
 
     popd
     mkdir -p dist
 
-    pushd work/dist
+    pushd work
 
-    zip -r -9 ../../dist/"$font_family".zip ./*
-    tar --gzip -cf ../../dist/"$font_family".tar.gz ./*
-    tar --xz -cf ../../dist/"$font_family".tar.xz ./*
-    command -v brotli &> /dev/null && \
-        tar --use-compress-program "brotli -Z" -cf ../../dist/"$font_family".tar.br ./*
+    zip -r -9 ../dist/"$font_family.zip" "$font_family"/*
+    tar --gzip -cvf ../dist/"$font_family.tar.gz" "$font_family"/*
+    tar --xz -cvf ../dist/"$font_family.tar.xz" "$font_family"/*
 
-    popd
-
-    pushd work/dist-nerd
-
-    zip -r -9 ../../dist/"$font_family"NerdFont.zip ./*
-    tar --gzip -cf ../../dist/"$font_family"NerdFont.tar.gz ./*
-    tar --xz -cf ../../dist/"$font_family"NerdFont.tar.xz ./*
-    command -v brotli &> /dev/null && \
-        tar --use-compress-program "brotli -Z" -cf ../../dist/"$font_family"NerdFont.tar.br ./*
+    zip -r -9 ../dist/"${font_family}NerdFont.zip" "${font_family}NerdFont"/*
+    tar --gzip -cvf ../dist/"${font_family}NerdFont.tar.gz" "${font_family}NerdFont"/*
+    tar --xz -cvf ../dist/"${font_family}NerdFont.tar.xz" "${font_family}NerdFont"/*
 
     popd
 
