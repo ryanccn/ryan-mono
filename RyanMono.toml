@@ -2,7 +2,7 @@
 family = "Ryan Mono"
 spacing = "normal"
 serifs = "sans"
-noCvSs = true
+noCvSs = false
 exportGlyphNames = true
 
 [buildPlans.RyanMono.variants]

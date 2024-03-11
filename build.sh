@@ -30,7 +30,7 @@ cyan() {
     printf '\033[36m%s\033[39m' "$@"
 }
 
-iosevka_version="v28.1.0"
+iosevka_version="v29.0.1"
 nerd_fonts_version="v3.1.1"
 font_families=("RyanMono" "RyanTerm")
 

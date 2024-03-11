@@ -2,7 +2,7 @@
 family = "Ryan Term"
 spacing = "term"
 serifs = "sans"
-noCvSs = true
+noCvSs = false
 exportGlyphNames = true
 
 [buildPlans.RyanTerm.variants]
