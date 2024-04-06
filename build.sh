@@ -30,8 +30,8 @@ cyan() {
     printf '\033[36m%s\033[39m' "$@"
 }
 
-iosevka_version="v29.0.1"
-nerd_fonts_version="v3.1.1"
+iosevka_version="v29.1.0"
+nerd_fonts_version="v3.2.0"
 font_families=("RyanMono" "RyanTerm")
 
 check_dependencies() {
@@ -46,9 +46,11 @@ check_dependencies() {
 check_dependencies \
     printf echo rm mkdir git \
     node npm find xargs curl \
-    unzip date zip tar cp
+    unzip date zip tar cp sed
 
-echo "$(bold "ryan-mono $(date +%Y.%m.%d)")"
+ryan_mono_version=$(date +%Y.%m.%d)
+
+echo "$(bold "ryan-mono $ryan_mono_version")"
 
 echo -e "$(cyan "Iosevka")\t\t$iosevka_version"
 echo -e "$(cyan "Nerd Fonts")\t$nerd_fonts_version"
@@ -62,38 +64,48 @@ command -v sysctl &> /dev/null && cpus="$(sysctl -n hw.physicalcpu)" && cpus_sou
 echo -e "$(cyan "Concurrency")\t$cpus $(dim "($cpus_source)")"
 echo
 
-rm -rf dist
+# rm -rf dist
+rm -rf work && mkdir -p work dist
+pushd work # => work/
+
+git clone --depth 1 --branch "$iosevka_version" https://github.com/be5invis/Iosevka.git _iosevka
+
+pushd _iosevka # => work/_iosevka
+for patch in ../../patches/*.patch; do
+    patch_name="$(basename "$patch")"
+    git apply "$patch"
+    git add .
+    git commit -m "apply patch $patch_name"
+done
+
+npm ci
+
+popd # => work/
+
+curl -fsSL -o FontPatcher.zip \
+    "https://github.com/ryanoasis/nerd-fonts/releases/download/$nerd_fonts_version/FontPatcher.zip"
+unzip FontPatcher.zip -d _fontpatcher
+rm FontPatcher.zip
 
 for font_family in "${font_families[@]}"; do
     echo "$(green "$(bold "Building $font_family")")"
 
-    rm -rf work && mkdir -p work
-    pushd work
+    pushd _iosevka # => work/_iosevka
+    cp "../../$font_family.toml" "private-build-plans.toml"
+    sed -i "s/%%version%%/$ryan_mono_version/g" "private-build-plans.toml"
 
-    git clone --depth 1 --branch "$iosevka_version" https://github.com/be5invis/Iosevka.git _iosevka
-    cp "../$font_family.toml" _iosevka/private-build-plans.toml
-
-    pushd _iosevka
-    npm ci
     npm run build -- "ttf::$font_family"
-    popd
+    popd # => work/
 
     mkdir -p "$font_family"
     cp _iosevka/dist/"$font_family"/TTF/* "$font_family"
-
-    curl -fsSL -o FontPatcher.zip \
-        "https://github.com/ryanoasis/nerd-fonts/releases/download/$nerd_fonts_version/FontPatcher.zip"
-    unzip FontPatcher.zip -d _fontpatcher
-    rm FontPatcher.zip
 
     mkdir -p "${font_family}NerdFont"
     find "$font_family" -name '*.ttf' -print0 | xargs -0 --max-args=1 --max-procs="$cpus" \
         fontforge -script _fontpatcher/font-patcher --quiet --complete --outputdir "${font_family}NerdFont"
 
-    popd
-    mkdir -p dist
-
-    pushd work
+    cp ../LICENSE "$font_family"
+    cp ../LICENSE "${font_family}NerdFont"
 
     zip -r -9 ../dist/"$font_family.zip" "$font_family"/*
     tar --gzip -cvf ../dist/"$font_family.tar.gz" "$font_family"/*
@@ -102,8 +114,4 @@ for font_family in "${font_families[@]}"; do
     zip -r -9 ../dist/"${font_family}NerdFont.zip" "${font_family}NerdFont"/*
     tar --gzip -cvf ../dist/"${font_family}NerdFont.tar.gz" "${font_family}NerdFont"/*
     tar --xz -cvf ../dist/"${font_family}NerdFont.tar.xz" "${font_family}NerdFont"/*
-
-    popd
-
-    rm -rf work
 done
