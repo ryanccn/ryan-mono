@@ -30,8 +30,8 @@ cyan() {
     printf '\033[36m%s\033[39m' "$@"
 }
 
-iosevka_version="v29.1.0"
-nerd_fonts_version="v3.2.0"
+iosevka_version="v30.1.0"
+nerd_fonts_version="v3.2.1"
 font_families=("RyanMono" "RyanTerm")
 
 check_dependencies() {
