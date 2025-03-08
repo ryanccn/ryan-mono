@@ -2,6 +2,6 @@
 
 .vscode/
 .idea/
+.zed/
 
-work/
-dist/
+result*

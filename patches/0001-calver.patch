@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ryan Cao <70191398+ryanccn@users.noreply.github.com>
+Date: Mon, 17 Sep 2001 00:00:00 +0000
+Subject: [PATCH] apply patch 0001-version.patch
+
+
+diff --git a/packages/font/src/naming/index.mjs b/packages/font/src/naming/index.mjs
+index 711be75..e5f2c25 100644
+--- a/packages/font/src/naming/index.mjs
++++ b/packages/font/src/naming/index.mjs
+@@ -1,5 +1,4 @@
+ import { Ot } from "ot-builder";
+-import semver from "semver";
+ 
+ export function createNamingDictFromArgv(argv) {
+ 	return {
+@@ -150,14 +149,15 @@ function setVersion(font, naming) {
+ 	if (naming.version) {
+ 		// Trim the "Version " prefix if it exists
+ 		const versionString = naming.version.trim().replace(/^Version\s+/i, "");
+-		const ver = semver.parse(versionString);
+-		if (!ver) throw new Error(`Version string ${naming.version} does not follow semver format`);
+-		if (ver.minor > 99 || ver.patch > 99) throw new RangeError("Version number overflow");
++
++		const versionParts = versionString.split(".").map(v => Number.parseInt(v));
++		if (versionParts.length !== 3 || versionParts.some(v => v === undefined || Number.isNaN(v)))
++			throw new RangeError("Version number is invalid");
+ 
+ 		// Set Name entry
+ 		nameFont(font, Ot.Name.NameID.VersionString, `Version ${versionString}`);
+ 		// Set Font Revision
+-		font.head.fontRevision = ver.major + (ver.minor * 100 + ver.patch) / 10000;
++		font.head.fontRevision = Number.parseInt(versionString.replaceAll(".", ""));
+ 	}
+ }
+ 
+-- 
+2.48.1
+
