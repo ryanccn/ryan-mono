@@ -6,7 +6,7 @@ noCvSs = true
 exportGlyphNames = true
 
 [buildPlans.RyanMono.variants]
-inherits = "ss05"
+inherits = "ss15"
 
 [buildPlans.RyanMono.widths.Normal]
 shape = 600
@@ -33,7 +33,7 @@ noCvSs = true
 exportGlyphNames = true
 
 [buildPlans.RyanTerm.variants]
-inherits = "ss05"
+inherits = "ss15"
 
 [buildPlans.RyanTerm.widths.Normal]
 shape = 600

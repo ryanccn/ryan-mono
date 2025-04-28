@@ -61,8 +61,6 @@ buildNpmPackage {
     runHook postInstall
   '';
 
-  enableParallelBuilding = true;
-
   meta = {
     homepage = "https://github.com/ryanccn/ryan-mono";
     description = "Ryan's homemade Iosevka build";

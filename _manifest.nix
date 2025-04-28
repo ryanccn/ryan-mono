@@ -1,14 +1,14 @@
 {
-  version = "2025.03.09";
+  version = "2025.04.28";
 
   iosevka = {
-    version = "33.0.1";
-    hash = "sha256-Yosl6dqbYLsX1whkSazHHlbZ4zhJ5jSZmrdi22BLBJM=";
-    npmDepsHash = "sha256-/a2VVz8w2a2KfOgWAg0AWmdbPqQ7bN6rBHhv6b1TwYg=";
+    version = "33.2.2";
+    hash = "sha256-dhMTcceHru/uLHRY4eWzFV+73ckCBBnDlizP3iY5w5w=";
+    npmDepsHash = "sha256-5DcMV9N16pyQxRaK6RCoeghZqAvM5EY1jftceT/bP+o=";
   };
 
   nerd-fonts = {
-    version = "3.3.0";
-    hash = "sha256-/LbO8+ZPLFIUjtZHeyh6bQuplqRfR6SZRu9qPfVZ0Mw=";
+    version = "3.4.0";
+    hash = "sha256-JR4sxV2yOXtrnIjFBh4as304BjNIcKkBzxOKLxrjo2I=";
   };
 }
