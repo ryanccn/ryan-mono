@@ -1,10 +1,10 @@
 {
-  version = "2025.04.28";
+  version = "2026.05.23";
 
   iosevka = {
-    version = "33.2.2";
-    hash = "sha256-dhMTcceHru/uLHRY4eWzFV+73ckCBBnDlizP3iY5w5w=";
-    npmDepsHash = "sha256-5DcMV9N16pyQxRaK6RCoeghZqAvM5EY1jftceT/bP+o=";
+    version = "34.6.0";
+    hash = "sha256-fkTXZtuIMm6N4KeBjjs2DM5V/1hbJ2GGLraNzO8mhQE=";
+    npmDepsHash = "sha256-+YolL7ZtmisgQ5ZI5X8YGvPAYU9iEseRLDTOz8QIkvk=";
   };
 
   nerd-fonts = {
